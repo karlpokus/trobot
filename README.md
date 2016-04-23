@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/karlpokus/trobot.svg?branch=master)](https://travis-ci.org/karlpokus/trobot)
+
 # TL;DR
 
 Trobot is (1) a cli to manage webhooks from Trello and (2) a new and shiny bot to respond to said webhooks.
