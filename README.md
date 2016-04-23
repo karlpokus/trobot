@@ -83,3 +83,7 @@ var data = JSON.parse(req.body);
   }
 
 ```
+
+# License
+
+MIT
