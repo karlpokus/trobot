@@ -86,6 +86,8 @@ var data = JSON.parse(req.body);
 
 ```
 
+Checkout [Max](https://github.com/karlpokus/max) for a complete example with a node server.
+
 # License
 
 MIT
