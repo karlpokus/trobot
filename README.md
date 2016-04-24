@@ -11,13 +11,13 @@ Trobot is (1) a cli to manage webhooks from Trello and (2) a new and shiny bot t
 
 ### What you need to do
 
-Get user data (username, userId, token, key, secret)
+Get user data (username, userId, token, key, secret) from Trello.
 
 - username is in user profile
 - userId by tacking `.json` unto any board url and start digging.
 - token, secret and key at `https://trello.com/app-key`
 
-Place user data in root as `trello-config.json` This is sensitive data so keep it safe.
+Place user data in root as `trello-config.json` for the webhooks cli to work. When instantiating a new bot, on the other hand, it's optional to pass user data as argument. Otherwise bot will read from `process.env`. Same keys but in all caps. Remember - user data is sensitive data - so keep it safe!
 
 ```
 {
@@ -64,7 +64,7 @@ longTitle(data)
 var Trobot = require('trobot'),
     config = require('./trello-config.json');
 
-var bot = new Trobot(config);
+var bot = new Trobot(config); // will read from process.env if config is not passed.
 
 /* add custom functions here */
 

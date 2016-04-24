@@ -1,6 +1,6 @@
 {
   "name": "trobot",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Make your own trello bot in node.js",
   "keywords": [
     "trobot",
