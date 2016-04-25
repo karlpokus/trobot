@@ -1,3 +1,4 @@
+[![npm version](https://badge.fury.io/js/trobot.svg)](https://badge.fury.io/js/trobot)
 [![Build Status](https://travis-ci.org/karlpokus/trobot.svg?branch=master)](https://travis-ci.org/karlpokus/trobot)
 
 # TL;DR
