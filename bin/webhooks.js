@@ -178,12 +178,27 @@ var webhooks = {
 
 // START
 try {
+  
   var path = '/trello-config.json',
       data = require(process.cwd() + path);
+  
   webhooks.t = new Trello(data.key, data.token);
   webhooks.d = data;
   logger.action();
+  
 } catch (e) {
-  logger.log('not ok', e.message);
-  return
+
+  var data = {
+      "key": process.env.KEY,
+      "token": process.env.TOKEN,
+      "secret": process.env.SECRET,
+      "userId": process.env.USERID,
+      "username": process.env.USERNAME,
+      "webhookCallbackURLdefault": process.env.WEBHOOKCALLBACKURLDEFAULT
+    };
+
+  webhooks.t = new Trello(data.key, data.token);
+  webhooks.d = data;
+  logger.action();
+  
 }

@@ -18,7 +18,7 @@ Get user data (username, userId, token, key, secret) from Trello.
 - userId by tacking `.json` unto any board url and start digging.
 - token, secret and key at `https://trello.com/app-key`
 
-Place user data in root as `trello-config.json` for the webhooks cli to work. When instantiating a new bot, on the other hand, it's optional to pass user data as argument. Otherwise bot will read from `process.env`. Same keys but in all caps. Remember - user data is sensitive data - so keep it safe!
+Place user data in root as `trello-config.json` or as environmental variables (same keys but in all caps). Webhooks and bot will read from either. Remember - user data is sensitive data - so keep it safe!
 
 ```
 {
@@ -40,7 +40,7 @@ Add user to any model on Trello (boards, lists or cards etc.) you wish to monito
 Manage webhooks via `npm run webhooks` called from root.
 
 - Make sure you return a 200 for a quick HEAD to any callbackUrl you will provide before adding a new webhook. Trello checks this.
-- There are multiple ways to build webhooks i.e one or more callbackURLs for one or more responses. You can also add query params to your callbackURL if it helps.
+- There are multiple ways to build webhooks i.e 1+ callbackURLs for 1+ responses to 1+ model actions. You may also add query params to your callbackURL if it helps.
 - Read more at `https://developers.trello.com/apis/webhooks`
 
 After creating webhooks `require('trobot')` somewhere, add custom functions to your bot and apply them in routes.
@@ -48,8 +48,6 @@ After creating webhooks `require('trobot')` somewhere, add custom functions to y
 All done!
 
 # Examples
-
-Trobot comes with three responses ready to use.
 
 ```
 // Respond with a comment to someone forgetting to put @username in a comment
