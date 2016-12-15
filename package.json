@@ -1,6 +1,6 @@
 {
   "name": "trobot",
-  "version": "1.2.0",
+  "version": "2.0.0",
   "description": "Make your own trello bot in node.js",
   "keywords": [
     "trobot",
@@ -13,11 +13,12 @@
     "webhooks": "./bin/webhooks.js"
   },
   "scripts": {
-    "test": "tape ./test/tests.js"
+    "test": "tape ./test/basic-tests.js",
+    "test:server": "tape ./test/*.js"
   },
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/karlpokus/trobot.git"
+    "type": "git",
+    "url": "https://github.com/karlpokus/trobot.git"
   },
   "bugs": {
     "url": "https://github.com/karlpokus/trobot/issues"
@@ -30,6 +31,7 @@
     "readline-sync": "^1.4.1"
   },
   "devDependencies": {
+    "request": "^2.79.0",
     "tape": "^4.5.1"
   }
 }
