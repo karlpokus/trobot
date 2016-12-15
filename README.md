@@ -1,17 +1,17 @@
 [![npm version](https://badge.fury.io/js/trobot.svg)](https://badge.fury.io/js/trobot)
 [![Build Status](https://travis-ci.org/karlpokus/trobot.svg?branch=master)](https://travis-ci.org/karlpokus/trobot)
 
-# TL;DR
+# 2.0
+Trobot 2.0 is out! The new api is event-based and much simpler to use and maintain. Note: 2.0 includes breaking changes.
 
+# trobot
 Trobot is (1) a cli to manage webhooks from Trello and (2) a new and shiny bot to respond to said webhooks.
 
 ### What you need
-
 - a trello user (to be the bot)
 - a node.js server
 
 ### What you need to do
-
 Get user data (username, userId, token, key, secret) from Trello.
 
 - username is in user profile
@@ -31,62 +31,92 @@ Place user data in root as `trello-config.json` or as environmental variables (s
 }
 ```
 
-Install trobot `npm install trobot`
+# install
+```
+$ npm install trobot
+```
 
-Add `"webhooks": "webhooks"` to `scripts` in your `package.json`
-
-Add user to any model on Trello (boards, lists or cards etc.) you wish to monitor.
-
-Manage webhooks via `npm run webhooks` called from root.
-
+# webhooks
+- Add `webhooks: webhooks` to `scripts` in your `package.json`
+- Add user to any model on Trello (boards, lists, and cards etc.) you wish to monitor.
+- Manage webhooks via `npm run webhooks` called from root.
 - Make sure you return a 200 for a quick HEAD to any callbackUrl you will provide before adding a new webhook. Trello checks this.
 - There are multiple ways to build webhooks i.e 1+ callbackURLs for 1+ responses to 1+ model actions. You may also add query params to your callbackURL if it helps.
 - Read more at `https://developers.trello.com/apis/webhooks`
 
-After creating webhooks `require('trobot')` somewhere, add custom functions to your bot and apply them in routes.
+After creating webhooks - do `require('trobot')` somewhere, add custom event handlers and apply them in routes.
 
 All done!
 
-# Examples
+# 2.0 usage
+```javascript
+/*
+EVENT HANDLER
+event: trello model event
+data: trello event payload. Includes action and model
+res: nodes http.ServerResponse to end the response when done
+*/
+bot.on(event, cb(data, res))
 
+/*
+TRIGGER EVENT
+data and res are automatically passed to the event handlers callback when the 'request' event is called.
+Include as many args as you like for custom events.
+*/
+bot.emit(event [, args]);
+
+// included events
+request // parses payload, checks origin is trello
+reply // posts a comment to a card
 ```
-// Respond with a comment to someone forgetting to put @username in a comment
-noRecipientInComment(data)
 
-// Respond with a comment to someone calling the bots username in a comment
-commentForBot(data)
+# 2.0 example
+```javascript
+var http = require('http'),
+    server = http.createServer(),
+    port = process.env.PORT || 8080,
+    Bot = require('trobot'),
+    bot = new Bot(); // no options passed. User data will be read from process.env
 
-// Respond with a comment to someone creating a card with a title of 100+ characters
-longTitle(data)
+bot.on('commentCard', function(data, res){
+  var comment = data.action.data.text,
+      authorId = data.action.memberCreator.id,
+      authorUsername = data.action.memberCreator.username,
+      cardId = data.action.data.card.id,
+  		answer;
 
-// init
-var Trobot = require('trobot'),
-    config = require('./trello-config.json');
-
-var bot = new Trobot(config); // will read from process.env if config is not passed.
-
-/* add custom functions here */
-
-// Somewhere in a route
-var data = JSON.parse(req.body);
-
-  if (bot.originIsTrello(req)) {
-
-    if (bot.actionTypesAreOneOf(['commentCard'], data)) {
-      bot.commentForBot(data);
-      bot.noRecipientInComment(data);
-    }
-
-    if (bot.actionTypesAreOneOf(['createCard', 'updateCard'], data)) {
-      bot.longTitle(data);
-    }
-
+  if (!/@/g.test(comment) && authorId !== this.data.userId) {
+    answer = "@" + authorUsername + " include @username to notify the user of your comment by e-mail.";
+    this.emit('reply', cardId, answer, res);
   }
+});
 
+server
+  .on('request', function(req, res){
+    bot.emit('request', req, res);
+  })
+  .listen(port);
 ```
 
 Checkout [Max](https://github.com/karlpokus/max) for a complete example with a node server.
 
-# License
+# test
+```bash
+# run basic tests
+$ npm test
+# runs all tests
+$ npm run test:server -- [url]
+```
 
+# TODOs
+- [x] 2.0 api
+- [x] bump v
+- [ ] new release
+- [ ] npm publish
+- [ ] option `addDefaultWebhookOnAddMemberToBoard`
+- [ ] option `avoidBotRespondingToBot` to omit events where `data.action.memberCreator.id` is bot
+- [ ] option to turn off `originIsTrello`
+- [ ] add some details on the trello data obj
+
+# License
 MIT
