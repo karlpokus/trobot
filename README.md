@@ -55,6 +55,7 @@ EVENT HANDLER
 event: trello model event
 data: trello event payload. Includes action and model
 res: nodes http.ServerResponse to end the response when done
+[this] is bot inside the callback
 */
 bot.on(event, cb(data, res))
 
