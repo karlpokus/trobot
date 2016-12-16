@@ -1,11 +1,9 @@
 #!/usr/bin/env node
 
-// modules
 var rl = require('readline-sync'),
     chalk = require('chalk'),
     Trello = require("node-trello");
 
-// log to the console
 var logger = {
   log: function(state, str) {
     if (state === 'ok') {
@@ -17,7 +15,6 @@ var logger = {
     if (state === 'header') {
       str = chalk.inverse(str);
     }
-    // log
     console.log('\n' + str + '\n');
   },
   action: function() {
@@ -28,6 +25,7 @@ var logger = {
 
     if (index >= 0) {
       webhooks[actions[index]]();
+      
     } else {
       this.log('ok', 'Exit ok');
       return
@@ -35,16 +33,12 @@ var logger = {
   }
 };
 
-// making requests to Trello
 var webhooks = {
   list: function() {
     logger.log('header', 'List');
-
     var url = '/1/tokens/' + this.t.token + '/webhooks';
 
-    // GET
     this.t.get(url, function(err, data) {
-
       if (err) {
         logger.log('not ok', err);
         return
@@ -71,18 +65,15 @@ var webhooks = {
         url = rl.question('CallbackUrl: [d for default] '),
         desc = rl.question('Description: ');
 
-    // check input
     if (!id || !url || !desc) {
       logger.log('not ok', 'Missing input');
       return;
     }
 
-    // check url
     if (url === 'd') {
       url = this.d.webhookCallbackURLdefault;
     }
 
-    // data for POST
     var hookURL = "/1/webhooks",
         hookData = {
           description: desc,
@@ -92,19 +83,14 @@ var webhooks = {
           token: this.t.token
         };
 
-    // POST
     this.t.post(hookURL, hookData, function(err, data){
-
-      // err
       if (err) {
         logger.log('not ok', err);
         return
       }
 
       logger.log('ok', data.description + ' added');
-
       that.list();
-
     });
   },
   toggle: function() {
@@ -119,31 +105,22 @@ var webhooks = {
           token: this.t.token
         };
 
-    // GET
     this.t.get(hookURL, hookData, function(err, data){
-
-      // err
       if (err) {
         logger.log('not ok', err);
         return
       }
 
-      // inverse
       hookData.value = !data._value;
 
-        // PUT
         that.t.put(hookURL, hookData, function(err, data){
-
-          // err
           if (err) {
             logger.log('not ok', err);
             return
           }
 
           logger.log('ok', data.description + ' toggled');
-
           that.list();
-
         });
     });
   },
@@ -159,46 +136,28 @@ var webhooks = {
           token: this.t.token
         };
 
-    // DEL
     this.t.del(delHookURL, hookData, function(err, data){
-
-      // err
       if (err) {
         logger.log('not ok', err);
         return
       }
 
       logger.log('ok', 'Webhook deleted');
-
       that.list();
-
     });
+  },
+  init: function() {
+    var data = {};
+  
+    ['key', 'token', 'secret', 'userid', 'username', 'webhookCallbackURLdefault']
+      .forEach(function(key){
+        data[key] = process.env[key.toUpperCase()];
+      });
+      
+    this.t = new Trello(data.key, data.token);
+    this.d = data;
+    logger.action();
   }
 }
 
-// START
-try {
-  
-  var path = '/trello-config.json',
-      data = require(process.cwd() + path);
-  
-  webhooks.t = new Trello(data.key, data.token);
-  webhooks.d = data;
-  logger.action();
-  
-} catch (e) {
-
-  var data = {
-      "key": process.env.KEY,
-      "token": process.env.TOKEN,
-      "secret": process.env.SECRET,
-      "userId": process.env.USERID,
-      "username": process.env.USERNAME,
-      "webhookCallbackURLdefault": process.env.WEBHOOKCALLBACKURLDEFAULT
-    };
-
-  webhooks.t = new Trello(data.key, data.token);
-  webhooks.d = data;
-  logger.action();
-  
-}
+webhooks.init();
