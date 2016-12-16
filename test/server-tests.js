@@ -12,18 +12,28 @@ var test = require('tape'),
     http = require('http'),
     server = http.createServer(),
     port = process.env.PORT || 8080,
-    r = require('request'),
+    requestLib = require('request'),
     Trobot = require('../lib/trobot.js'),
     bot = new Trobot(),
     base64Digest = function(s) {
       return crypto.createHmac('sha1', process.env.SECRET).update(s).digest('base64');
-    };
+    },
+    logs = [];
+
+server.on('request', function(req, res){
+  bot.emit('request', req, res);
+});
 
 test.onFinish(server.close.bind(server));
 
-test('event:request', function(t){
+test('request-with-logs', function(t){
+  bot.on('log', function(str){
+    logs.push(str);
+  });
+  
   bot.on('commentCard', function(data, res){
     t.equal(data.action.type, 'commentCard', 'event is commentCard');
+    t.equal(logs.length, 3, '3 logs emitted');
     res.end();
     t.end();
   });
@@ -36,23 +46,14 @@ test('event:request', function(t){
       body = JSON.stringify(data),
       callbackURL = process.env.WEBHOOKCALLBACKURLDEFAULT;
   
-  server
-    .on('request', function(req, res){
-      bot.emit('request', req, res);
-    })
-    .listen(port, function(){
-      
-      r({
-        url: url,
-        method: 'POST',
-        headers: {
-          "x-trello-webhook": base64Digest(body + callbackURL)
-        },
-        body: body
-      }, function(){
-        console.log('request done');
-      });
-      
+  server.listen(port, function(){
+    requestLib({
+      url: url,
+      method: 'POST',
+      headers: {
+        "x-trello-webhook": base64Digest(body + callbackURL)
+      },
+      body: body
     });
-  
+  });
 });
