@@ -1,8 +1,8 @@
 [![npm version](https://badge.fury.io/js/trobot.svg)](https://badge.fury.io/js/trobot)
 [![Build Status](https://travis-ci.org/karlpokus/trobot.svg?branch=master)](https://travis-ci.org/karlpokus/trobot)
 
-# 2.x
-Trobot 2.1 is out! The new api is a pub/sub system and much simpler to use and maintain. Just add webhooks and subscribe to trello model events. Note: 2.0 includes breaking changes.
+# 3.x
+Since 2.x trobot has a new api consisting of a pub/sub system which is much simpler to use and maintain. Just add webhooks and subscribe to trello model events. Note: Major versions includes breaking changes.
 
 # trobot
 Trobot is (1) a cli to manage webhooks from Trello and (2) a new and shiny bot to respond to said webhooks.
@@ -14,20 +14,20 @@ Trobot is (1) a cli to manage webhooks from Trello and (2) a new and shiny bot t
 ### What you need to do
 Get user data (username, userId, token, key, secret) from Trello.
 
-- username is in user profile
-- userId by tacking `.json` unto any board url and start digging.
-- token, secret and key at `https://trello.com/app-key`
+- `username` is in user profile
+- `userid` by tacking `.json` unto any board url and start digging.
+- `token`, `secret` and `key` at `https://trello.com/app-key`
 
-Add user data to `process.env[key]` in all caps for the bot and webhooks to work. These will also be available in `bot.data` under slightly different keys (see below). Remember - this is sensitive data - so keep it safe.
+Add user data to `process.env[key]` in ALL CAPS for the bot and webhooks to work. These will also be available in lowercase under `bot.data` (see below). Remember - this is sensitive data - so keep it safe.
 
 ```
 {
   "key": "...", // request to Trello
   "token": "...", // request to Trello
   "secret": "...", // verify Trello as origin
-  "userId": "...", // interactions
+  "userid": "...", // interactions
   "username": "...", // interactions
-  "webhookCallbackURLdefault": "..." // handy helper
+  "webhookcallbackurldefault": "..." // handy helper
 }
 ```
 
@@ -48,7 +48,7 @@ After creating webhooks - do `require('trobot')` somewhere, add custom event han
 
 All done!
 
-# 2.0 usage
+# usage
 ```javascript
 /*
 EVENT HANDLER
@@ -80,7 +80,7 @@ bot.emit('log', msg);
 bot.on('error', err, statusCode, res);
 ```
 
-# 2.0 example
+# example
 ```javascript
 var http = require('http'),
     server = http.createServer(),
@@ -95,7 +95,7 @@ bot.on('commentCard', function(data, res){
       cardId = data.action.data.card.id,
   		answer;
 
-  if (!/@/g.test(comment) && authorId !== this.data.userId) {
+  if (!/@/g.test(comment) && authorId !== this.data.userid) {
     answer = "@" + authorUsername + " include @username to notify the user of your comment by e-mail.";
     this.emit('reply', cardId, answer, res);
   }
@@ -122,8 +122,8 @@ Checkout [Max](https://github.com/karlpokus/max) for a complete example with a n
 ```bash
 # run basic tests
 $ npm test
-# runs all tests
-$ npm run test:server -- [url]
+# run basics tests and server requests
+$ npm run test:server -- [remote url | http://localhost:8080]
 ```
 
 # TODOs
@@ -140,7 +140,8 @@ $ npm run test:server -- [url]
 - [x] emit `log` for debugging and let user add listeners as necessary
 - [x] Add log to tests and readme
 - [x] add note on trello webhooks require node 6.x
-- [ ] am I required to add api keys in webhooks?
+- [ ] required to add api keys in webhooks?
+- [x] 3.0 user data is lowercase on `bot.data`
 
 # License
 MIT

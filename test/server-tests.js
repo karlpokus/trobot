@@ -3,7 +3,7 @@ if (!url) {
   throw new Error('must pass url');
 }
 
-['key', 'token', 'secret', 'userid', 'username', 'webhookCallbackURLdefault'].forEach(function(key){
+['key', 'token', 'secret', 'userId', 'username', 'webhookCallbackURLdefault'].forEach(function(key){
   process.env[key.toUpperCase()] = 'foo';
 });
 
@@ -30,22 +30,28 @@ test('request-with-logs', function(t){
   bot.on('log', function(str){
     logs.push(str);
   });
-  
+
   bot.on('commentCard', function(data, res){
     t.equal(data.action.type, 'commentCard', 'event is commentCard');
     t.equal(logs.length, 3, '3 logs emitted');
     res.end();
     t.end();
   });
-  
+
   var data = {
         action: {
-          type: 'commentCard'
+          type: 'commentCard',
+          memberCreator: {
+            fullName: 'user'
+          }
+        },
+        model: {
+          name: 'name'
         }
       },
       body = JSON.stringify(data),
       callbackURL = process.env.WEBHOOKCALLBACKURLDEFAULT;
-  
+
   server.listen(port, function(){
     requestLib({
       url: url,

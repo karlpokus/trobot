@@ -25,7 +25,7 @@ var logger = {
 
     if (index >= 0) {
       webhooks[actions[index]]();
-      
+
     } else {
       this.log('ok', 'Exit ok');
       return
@@ -71,7 +71,7 @@ var webhooks = {
     }
 
     if (url === 'd') {
-      url = this.d.webhookCallbackURLdefault;
+      url = this.d.webhookcallbackurldefault;
     }
 
     var hookURL = "/1/webhooks",
@@ -148,12 +148,12 @@ var webhooks = {
   },
   init: function() {
     var data = {};
-  
-    ['key', 'token', 'secret', 'userid', 'username', 'webhookCallbackURLdefault']
+
+    ['key', 'token', 'secret', 'userid', 'username', 'webhookcallbackurldefault']
       .forEach(function(key){
         data[key] = process.env[key.toUpperCase()];
       });
-      
+
     this.t = new Trello(data.key, data.token);
     this.d = data;
     logger.action();

@@ -1,4 +1,4 @@
-['key', 'token', 'secret', 'userid', 'username', 'webhookCallbackURLdefault'].forEach(function(key){
+['key', 'token', 'secret', 'userid', 'username', 'webhookcallbackurldefault'].forEach(function(key){
   process.env[key.toUpperCase()] = 'foo';
 });
 
@@ -27,7 +27,7 @@ test('originIsTrello', function(t){
           "x-trello-webhook": base64Digest(body + callbackURL)
         }
       };
-  
+
   t.ok(bot.originIsTrello(request), 'origin is Trello');
-  t.end();  
+  t.end();
 });
