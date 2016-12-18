@@ -15,22 +15,50 @@ var test = require('tape'),
     requestLib = require('request'),
     Trobot = require('../lib/trobot.js'),
     bot = new Trobot(),
-    base64Digest = function(s) {
-      return crypto.createHmac('sha1', process.env.SECRET).update(s).digest('base64');
-    },
-    logs = [];
+    logs = [],
+    payload = {
+      action: {
+        type: 'commentCard',
+        memberCreator: {
+          fullName: 'user'
+        }
+      },
+      model: {
+        name: 'name'
+      }
+    };
 
-server.on('request', function(req, res){
-  bot.emit('request', req, res);
-});
+function post(url, data, cb) {
+  function base64Digest(s) {
+    return crypto.createHmac('sha1', process.env.SECRET).update(s).digest('base64');
+  };
+
+  var body = JSON.stringify(data),
+      callbackURL = process.env.WEBHOOKCALLBACKURLDEFAULT;
+
+  requestLib({
+    url: url,
+    method: 'POST',
+    headers: {
+      "x-trello-webhook": base64Digest(body + callbackURL)
+    },
+    body: body
+  }, cb);
+}
+
+server
+  .on('request', function(req, res){
+    bot.emit('request', req, res);
+  })
+  .listen(port);
 
 test.onFinish(server.close.bind(server));
 
-test('request-with-logs', function(t){
-  bot.on('log', function(str){
-    logs.push(str);
-  });
+bot.on('log', function(str){
+  logs.push(str);
+});
 
+test('common request with logs', function(t){
   bot.on('commentCard', function(data, res){
     t.equal(data.action.type, 'commentCard', 'event is commentCard');
     t.equal(logs.length, 3, '3 logs emitted');
@@ -38,28 +66,16 @@ test('request-with-logs', function(t){
     t.end();
   });
 
-  var data = {
-        action: {
-          type: 'commentCard',
-          memberCreator: {
-            fullName: 'user'
-          }
-        },
-        model: {
-          name: 'name'
-        }
-      },
-      body = JSON.stringify(data),
-      callbackURL = process.env.WEBHOOKCALLBACKURLDEFAULT;
+  post(url, payload);
+});
 
-  server.listen(port, function(){
-    requestLib({
-      url: url,
-      method: 'POST',
-      headers: {
-        "x-trello-webhook": base64Digest(body + callbackURL)
-      },
-      body: body
-    });
+test('request with unregistered model event', function(t){
+  logs = [];
+  payload.action.type = 'not a trello model event';
+
+  post(url, payload, function(){
+    t.equal(logs.length, 4, '4 logs emitted');
+    t.ok(/no handler/.test(logs[3]), 'last log is no handler found');
+    t.end();
   });
 });
