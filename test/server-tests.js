@@ -61,9 +61,10 @@ bot.on('log', function(str){
 test('common request with logs', function(t){
   bot.on('commentCard', function(data, res){
     t.equal(data.action.type, 'commentCard', 'event is commentCard');
-    t.equal(logs.length, 3, '3 logs emitted');
-    res.end();
-    t.end();
+    res.end(function(){
+      t.equal(logs.length, 4, '4 logs emitted'); // dataparser, origin, user triggered event on model, end response
+      t.end();
+    });
   });
 
   post(url, payload);
@@ -74,8 +75,7 @@ test('request with unregistered model event', function(t){
   payload.action.type = 'not a trello model event';
 
   post(url, payload, function(){
-    t.equal(logs.length, 4, '4 logs emitted');
-    t.ok(/no handler/.test(logs[3]), 'last log is no handler found');
+    t.equal(logs.length, 5, '5 logs emitted'); // dataparser, origin, user triggered event on model, no handler for event found, end response
     t.end();
   });
 });

@@ -41,8 +41,7 @@ $ npm install trobot
 - Add user to any model on Trello (boards, lists, and cards etc.) you wish to monitor.
 - Manage webhooks via `npm run webhooks` called from root.
 - Make sure you return a 200 for a quick HEAD to any callbackUrl you will provide before adding a new webhook. Trello checks this.
-- There are multiple ways to build webhooks i.e 1+ callbackURLs for 1+ responses to 1+ model actions. You may also add query params to your callbackURL if it helps.
-- Read more at `https://developers.trello.com/apis/webhooks`
+- There are multiple ways to build webhooks i.e 1+ callbackURLs for 1+ responses to 1+ model actions. You may also add query params to your callbackURL if it helps. Read more at `https://developers.trello.com/apis/webhooks`.
 
 After creating webhooks - do `require('trobot')` somewhere, add custom event handlers and apply them in routes.
 
@@ -61,7 +60,7 @@ bot.on(event, cb(data, res))
 
 /*
 TRIGGER EVENT
-data and res are automatically passed to the event handlers callback when the 'request' event is called.
+data and res are passed to the event handlers callback when the 'request' event is called.
 Include as many args as you like for custom events.
 */
 bot.emit(event [, args]);
@@ -82,11 +81,9 @@ bot.on('error', err, statusCode, res);
 
 # example
 ```javascript
-var http = require('http'),
-    server = http.createServer(),
-    port = process.env.PORT || 8080,
-    Bot = require('trobot'),
-    bot = new Bot(); // no options passed. User data will be read from process.env
+// bot.js
+var Bot = require('trobot'),
+    bot = new Bot();
 
 bot.on('commentCard', function(data, res){
   var comment = data.action.data.text,
@@ -100,6 +97,16 @@ bot.on('commentCard', function(data, res){
     this.emit('reply', cardId, answer, res);
   }
 });
+
+module.exports = bot;
+```
+
+```javascript
+// server.js
+var http = require('http'),
+    server = http.createServer(),
+    port = process.env.PORT || 8080,
+    bot = require('./bot.js');
 
 server
   .on('request', function(req, res){
@@ -140,8 +147,9 @@ $ npm run test:server -- [remote url | http://localhost:8080]
 - [x] emit `log` for debugging and let user add listeners as necessary
 - [x] Add log to tests and readme
 - [x] add note on trello webhooks require node 6.x
-- [ ] required to add api keys in webhooks?
+- [ ] remove surplus api keys in webhooks
 - [x] 3.0 user data is lowercase on `bot.data`
+- [x] log `response end` on `res.end`
 
 # License
 MIT
