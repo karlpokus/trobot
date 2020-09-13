@@ -5,7 +5,7 @@
 Since 2.x trobot has a new api consisting of a pub/sub system which is much simpler to use and maintain. Just add webhooks and subscribe to trello model events. Note: Major versions includes breaking changes.
 
 # What it is
-Trobot is (1) a cli to manage webhooks from Trello and (2) a new and shiny bot to respond to said webhooks. Now featured on the [official Trello developer community page](https://developers.trello.com/community).
+Trobot is (1) a cli to manage webhooks from Trello and (2) a new and shiny bot to respond to said webhooks. Now featured on the [official Trello developer community page](https://developer.atlassian.com/cloud/trello/guides/community/community-projects/).
 
 ### What you need
 - a trello user (to be the bot)
